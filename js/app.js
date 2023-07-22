@@ -10,6 +10,7 @@ class CalorieTracker {
     this.#displayCaloriesConsumed();
     this.#displayCaloriesBurned();
     this.#displayCaloriesRemaining();
+    this.#displayCaloriesProgress();
   }
 
   // Public Methods
@@ -54,10 +55,36 @@ class CalorieTracker {
 
   #displayCaloriesRemaining() {
     const caloriesRemainingEl = document.getElementById('calories-remaining');
+    const progressEl = document.getElementById('calorie-progress');
 
     const remaining = this.#calorieLimit - this.#totalCalories;
 
     caloriesRemainingEl.innerHTML = remaining;
+
+    if (remaining <= 0) {
+      // prettier-ignore
+      caloriesRemainingEl.parentElement.parentElement.classList.remove('bg-light');
+      // prettier-ignore
+      caloriesRemainingEl.parentElement.parentElement.classList.add('bg-danger');
+
+      progressEl.classList.remove('bg-success');
+      progressEl.classList.add('bg-danger');
+    } else {
+      // prettier-ignore
+      caloriesRemainingEl.parentElement.parentElement.classList.add('bg-light');
+      // prettier-ignore
+      caloriesRemainingEl.parentElement.parentElement.classList.remove('bg-danger');
+
+      progressEl.classList.remove('bg-danger');
+      progressEl.classList.add('bg-success');
+    }
+  }
+
+  #displayCaloriesProgress() {
+    const progressEl = document.getElementById('calorie-progress');
+    const percentage = (this.#totalCalories / this.#calorieLimit) * 100;
+    const width = Math.min(percentage, 100);
+    progressEl.style.width = `${width}%`;
   }
 
   #render() {
@@ -65,6 +92,7 @@ class CalorieTracker {
     this.#displayCaloriesConsumed();
     this.#displayCaloriesBurned();
     this.#displayCaloriesRemaining();
+    this.#displayCaloriesProgress();
   }
 }
 
@@ -88,12 +116,16 @@ const tracker = new CalorieTracker();
 
 const breakfast = new Meal('Breakfast', 400);
 const lunch = new Meal('Lunch', 350);
+const lunch2 = new Meal('Lunch', 1850);
 tracker.addMeal(breakfast);
 tracker.addMeal(lunch);
+tracker.addMeal(lunch2);
 
 const run = new Workout('Run', 300);
 const run2 = new Workout('Run', 300);
+const run3 = new Workout('Run', 300);
 tracker.addWorkout(run);
 tracker.addWorkout(run2);
+tracker.addWorkout(run3);
 
 console.log(tracker);
