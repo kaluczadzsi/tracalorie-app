@@ -112,20 +112,65 @@ class Workout {
   }
 }
 
-const tracker = new CalorieTracker();
+class App {
+  #tracker = new CalorieTracker();
+  constructor() {
+    document
+      .getElementById('meal-form')
+      .addEventListener('submit', this.#newMeal.bind(this));
 
-const breakfast = new Meal('Breakfast', 400);
-const lunch = new Meal('Lunch', 350);
-const lunch2 = new Meal('Lunch', 1850);
-tracker.addMeal(breakfast);
-tracker.addMeal(lunch);
-tracker.addMeal(lunch2);
+    document
+      .getElementById('workout-form')
+      .addEventListener('submit', this.#newWorkout.bind(this));
+  }
 
-const run = new Workout('Run', 300);
-const run2 = new Workout('Run', 300);
-const run3 = new Workout('Run', 300);
-tracker.addWorkout(run);
-tracker.addWorkout(run2);
-tracker.addWorkout(run3);
+  #newMeal(e) {
+    e.preventDefault();
 
-console.log(tracker);
+    const name = document.getElementById('meal-name');
+    const calories = document.getElementById('meal-calories');
+
+    // Validate inputs
+    if (name.value === '' || calories.value === '') {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const meal = new Meal(name.value, +calories.value);
+
+    this.#tracker.addMeal(meal);
+
+    name.value = calories.value = '';
+
+    const collapseMeal = document.getElementById('collapse-meal');
+    const bsCollapse = new bootstrap.Collapse(collapseMeal, {
+      toggle: true,
+    });
+  }
+
+  #newWorkout(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('workout-name');
+    const calories = document.getElementById('workout-calories');
+
+    // Validate inputs
+    if (name.value === '' || calories.value === '') {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const workout = new Meal(name.value, +calories.value);
+
+    this.#tracker.addWorkout(workout);
+
+    name.value = calories.value = '';
+
+    const collapseWorkout = document.getElementById('collapse-workout');
+    const bsCollapse = new bootstrap.Collapse(collapseWorkout, {
+      toggle: true,
+    });
+  }
+}
+
+const app = new App();
