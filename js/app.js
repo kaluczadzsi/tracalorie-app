@@ -117,18 +117,18 @@ class App {
   constructor() {
     document
       .getElementById('meal-form')
-      .addEventListener('submit', this.#newMeal.bind(this));
+      .addEventListener('submit', this.#newItem.bind(this, 'meal'));
 
     document
       .getElementById('workout-form')
-      .addEventListener('submit', this.#newWorkout.bind(this));
+      .addEventListener('submit', this.#newItem.bind(this, 'workout'));
   }
 
-  #newMeal(e) {
+  #newItem(type, e) {
     e.preventDefault();
 
-    const name = document.getElementById('meal-name');
-    const calories = document.getElementById('meal-calories');
+    const name = document.getElementById(`${type}-name`);
+    const calories = document.getElementById(`${type}-calories`);
 
     // Validate inputs
     if (name.value === '' || calories.value === '') {
@@ -136,38 +136,18 @@ class App {
       return;
     }
 
-    const meal = new Meal(name.value, +calories.value);
-
-    this.#tracker.addMeal(meal);
-
-    name.value = calories.value = '';
-
-    const collapseMeal = document.getElementById('collapse-meal');
-    const bsCollapse = new bootstrap.Collapse(collapseMeal, {
-      toggle: true,
-    });
-  }
-
-  #newWorkout(e) {
-    e.preventDefault();
-
-    const name = document.getElementById('workout-name');
-    const calories = document.getElementById('workout-calories');
-
-    // Validate inputs
-    if (name.value === '' || calories.value === '') {
-      alert('Please fill in all fields');
-      return;
+    if (type === 'meal') {
+      const meal = new Meal(name.value, +calories.value);
+      this.#tracker.addMeal(meal);
+    } else {
+      const workout = new Workout(name.value, +calories.value);
+      this.#tracker.addWorkout(workout);
     }
 
-    const workout = new Meal(name.value, +calories.value);
-
-    this.#tracker.addWorkout(workout);
-
     name.value = calories.value = '';
 
-    const collapseWorkout = document.getElementById('collapse-workout');
-    const bsCollapse = new bootstrap.Collapse(collapseWorkout, {
+    const collapseItem = document.getElementById(`collapse-${type}`);
+    const bsCollapse = new bootstrap.Collapse(collapseItem, {
       toggle: true,
     });
   }
