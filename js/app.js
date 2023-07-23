@@ -28,6 +28,33 @@ class CalorieTracker {
     this.#render();
   }
 
+  removeMeal(id) {
+    const index = this.#meals.findIndex((meal) => meal.id === id);
+    if (index !== -1) {
+      const meal = this.#meals[index];
+      this.#meals.splice(index, 1);
+      this.#totalCalories -= meal.calories;
+      this.#render();
+    }
+  }
+
+  removeWorkout(id) {
+    const index = this.#workouts.findIndex((workout) => workout.id === id);
+    if (index !== -1) {
+      const workout = this.#workouts[index];
+      this.#workouts.splice(index, 1);
+      this.#totalCalories -= workout.calories;
+      this.#render();
+    }
+  }
+
+  reset() {
+    this.#totalCalories = 0;
+    this.#meals = [];
+    this.#workouts = [];
+    this.#render();
+  }
+
   // Private Methods
   #displayCaloriesTotal() {
     const totalCaloriesEl = document.getElementById('calories-total');
@@ -172,6 +199,26 @@ class App {
     document
       .getElementById('workout-form')
       .addEventListener('submit', this.#newItem.bind(this, 'workout'));
+
+    document
+      .getElementById('meal-items')
+      .addEventListener('click', this.#removeItem.bind(this, 'meal'));
+
+    document
+      .getElementById('workout-items')
+      .addEventListener('click', this.#removeItem.bind(this, 'workout'));
+
+    document
+      .getElementById('filter-meals')
+      .addEventListener('keyup', this.#filterItems.bind(this, 'meal'));
+
+    document
+      .getElementById('filter-workouts')
+      .addEventListener('keyup', this.#filterItems.bind(this, 'workout'));
+
+    document
+      .getElementById('reset')
+      .addEventListener('click', this.#reset.bind(this));
   }
 
   #newItem(type, e) {
@@ -200,6 +247,44 @@ class App {
     const bsCollapse = new bootstrap.Collapse(collapseItem, {
       toggle: true,
     });
+  }
+
+  #removeItem(type, e) {
+    if (
+      e.target.classList.contains('delete') ||
+      e.target.classList.contains('fa-xmark')
+    ) {
+      if (confirm('Are you sure?')) {
+        const id = e.target.closest('.card').getAttribute('data-id');
+
+        type === 'meal'
+          ? this.#tracker.removeMeal(id)
+          : this.#tracker.removeWorkout(id);
+
+        e.target.closest('.card').remove();
+      }
+    }
+  }
+
+  #filterItems(type, e) {
+    const text = e.target.value.toLowerCase();
+    document.querySelectorAll(`#${type}-items .card`).forEach((item) => {
+      const name = item.firstElementChild.firstElementChild.textContent;
+
+      if (name.toLowerCase().indexOf(text) !== -1) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  #reset(e) {
+    this.#tracker.reset();
+    document.getElementById('meal-items').innerHTML = '';
+    document.getElementById('workout-items').innerHTML = '';
+    document.getElementById('filter-meals').value = '';
+    document.getElementById('filter-workouts').value = '';
   }
 }
 
